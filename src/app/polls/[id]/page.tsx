@@ -1,12 +1,13 @@
-import React from 'react';
-import Poll from '@/components/Poll';
+// src/app/polls/[id]/page.tsx
 
-// Dynamically import the Poll component with SSR disabled
+import Poll from "@/components/Poll";
 
-const Page = async ({ params }: { params: { id: string } }) => {
-  const pollId = params.id;
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
 
-  return <Poll pollId={pollId} />;
-};
+export default async function Page({ params }: PageProps) {
+  const { id } = await params;
 
-export default Page;
+  return <Poll pollId={id} />;
+}

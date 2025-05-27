@@ -65,8 +65,9 @@ const Poll: React.FC<PollProps> = ({ pollId }) => {
   const isActive = poll?.isActive && !isExpired;
 
   useEffect(() => {
-    if (isConfirming)
+    if (isConfirming) {
       toast.loading("Transaction pending...", { id: "tx-status" });
+    }
     if (isConfirmed) {
       toast.success("Vote submitted successfully!", { id: "tx-status" });
       setIsSubmitting(false);
@@ -89,6 +90,8 @@ const Poll: React.FC<PollProps> = ({ pollId }) => {
     writeError,
     isReceiptError,
     receiptError,
+    handleError,
+    refetchPoll,
   ]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
