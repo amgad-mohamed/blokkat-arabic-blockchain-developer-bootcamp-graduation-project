@@ -10,7 +10,7 @@ import { Toaster } from "react-hot-toast";
 import Header from "@/components/Header";
 
 export const metadata: Metadata = {
-  title: "AppKit Example App",
+  title: "Voting App",
   description: "Powered by Reown",
 };
 
