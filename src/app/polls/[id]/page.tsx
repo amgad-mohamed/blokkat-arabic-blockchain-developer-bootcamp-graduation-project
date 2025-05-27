@@ -9,5 +9,9 @@ interface PageProps {
 export default async function Page({ params }: PageProps) {
   const { id } = await params;
 
-  return <Poll pollId={id} />;
+  return (
+    <div className="bg-[#f7f5fe56] h-screen">
+      <Poll pollId={id} />;
+    </div>
+  );
 }

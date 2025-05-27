@@ -23,6 +23,7 @@ type RawPoll = {
   isActive: boolean;
   expiresAt: bigint;
   optionNames: string[];
+  votes: bigint[];
 };
 
 const PollList = () => {
@@ -42,6 +43,7 @@ const PollList = () => {
   const filteredPolls = (polls as RawPoll[])?.filter((poll) =>
     poll.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  console.log("Filtered Polls:", filteredPolls);
 
   if (isLoading)
     return (
@@ -57,7 +59,7 @@ const PollList = () => {
     );
 
   return (
-    <div className="w-full px-4 sm:px-6 md:px-10 lg:px-16 py-8 sm:py-12">
+    <div className="w-full px-0 sm:px-6 md:px-10 lg:px-16 py-8 sm:py-12">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 sm:mb-8 gap-4">
         <div className="text-center md:text-left">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#9084df]">
@@ -108,10 +110,7 @@ const PollList = () => {
                   <span className="font-medium">Ends:</span>{" "}
                   {format(new Date(Number(poll.expiresAt) * 1000), "PPPpp")}
                 </p>
-                <p>
-                  {poll.optionCount.toString()} options ·{" "}
-                  {poll.optionCount.toString()} votes
-                </p>
+                <p>Options: {poll.optionCount.toString()} / Total Votes: {poll.votes.reduce((a, b) => Number(a) + Number(b), 0)}</p>
               </CardContent>
               <CardFooter>
                 <Link href={`/polls/${index}`} className="w-full">

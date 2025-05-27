@@ -33,7 +33,7 @@ const formSchema = z.object({
   pollName: z.string().min(5, "Poll name must be at least 5 characters"),
   duration: z
     .number({ invalid_type_error: "Duration must be a number" })
-    .min(1, "Duration must be at least 1 minute"),
+    .min(1, "Duration must be at least 1 hour"),
   options: z
     .array(z.object({ text: z.string().min(1, "Option text is required") }))
     .min(2, "At least 2 options are required"),
@@ -103,7 +103,7 @@ export function CreatePoll() {
         args: [
           data.pollName,
           data.options.map((opt) => opt.text),
-          data.duration * 60, // convert to seconds
+          data.duration * 60 * 60, // Convert hours to seconds
         ],
       });
     } catch (err) {
@@ -181,14 +181,14 @@ export function CreatePoll() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm sm:text-base">
-                        Duration (in minutes)
+                        Duration (in hours)
                       </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           min={1}
                           className="w-full text-sm sm:text-base"
-                          placeholder="e.g. 60"
+                          placeholder="e.g. 1"
                           {...field}
                           onChange={(e) =>
                             field.onChange(Number(e.target.value))

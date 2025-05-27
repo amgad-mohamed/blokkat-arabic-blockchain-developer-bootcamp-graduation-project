@@ -224,7 +224,7 @@
 //   },
 // ];
 
-export const CONTRACT_ADDRESS = "0x50440f7ad4Ba5fAa37715eF0a3B2d4A4E73B0478"; // replace with actual
+export const CONTRACT_ADDRESS = "0x7971DF92724272b7e08083853965c6dbb6de6C31"; // replace with actual
 export const CONTRACT_ABI = [
   { type: "constructor", inputs: [], stateMutability: "nonpayable" },
   {
