@@ -43,7 +43,6 @@ const PollList = () => {
   const filteredPolls = (polls as RawPoll[])?.filter((poll) =>
     poll.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  console.log("Filtered Polls:", filteredPolls);
 
   if (isLoading)
     return (

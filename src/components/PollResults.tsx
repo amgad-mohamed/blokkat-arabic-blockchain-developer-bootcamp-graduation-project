@@ -13,7 +13,6 @@ export default function PollResults() {
     functionName: "getPollResults",
     args: [pollId],
   });
-  console.log(results);
 
   return (
     <div>

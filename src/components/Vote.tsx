@@ -30,7 +30,7 @@ export default function Vote() {
       loading: "Submitting vote...",
       success: (tx) => `Vote submitted! Tx hash: ${tx}`,
       error: (err) => {
-        console.error("Vote failed:", err);
+        toast.error("Vote failed:", err);
         return `Vote failed: ${
           err.shortMessage || err.message || "Unknown error"
         }`;

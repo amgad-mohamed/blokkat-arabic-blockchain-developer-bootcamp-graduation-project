@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useReadContract } from "wagmi";
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "../app/lib/contract";
+import toast from "react-hot-toast";
 
 export function GetPollName() {
   const [pollId, setPollId] = useState<string>("");
@@ -23,7 +24,7 @@ export function GetPollName() {
         const result = await refetch();
         setPollName(result.data as string); // Access the 'data' property
       } catch (error) {
-        console.error("Error fetching poll name:", error);
+        toast.error(`Error fetching poll name: ${error instanceof Error ? error.message : String(error)}`);
       } finally {
         setLoading(false);
       }
