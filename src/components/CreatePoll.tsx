@@ -27,8 +27,8 @@ import {
 import { TrashIcon, PlusIcon } from "lucide-react";
 import { Button } from "@/shared/Button";
 import { Input } from "@/shared/input";
+import { cn } from "@/app/lib/utils";
 
-// ✅ Form schema
 const formSchema = z.object({
   pollName: z.string().min(5, "Poll name must be at least 5 characters"),
   duration: z
@@ -70,7 +70,7 @@ export function CreatePoll() {
     },
   });
 
-  const { control, handleSubmit } = form;
+  const { control, handleSubmit, reset } = form;
   const { fields, append, remove } = useFieldArray({
     control,
     name: "options",
@@ -103,7 +103,7 @@ export function CreatePoll() {
         args: [
           data.pollName,
           data.options.map((opt) => opt.text),
-          data.duration * 60 * 60, // Convert hours to seconds
+          data.duration * 60 * 60,
         ],
       });
     } catch (err) {
@@ -122,7 +122,7 @@ export function CreatePoll() {
   React.useEffect(() => {
     if (isConfirmed) {
       toast.success("Poll created successfully!", { id: "tx-status" });
-      form.reset();
+      reset();
       setLoading(false);
     }
   }, [isConfirmed]);
@@ -144,8 +144,8 @@ export function CreatePoll() {
   }, [isReceiptError, receiptError]);
 
   return (
-    <div className="w-full b px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-      <div className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto">
+    <div className="w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+      <div className="w-full max-w-2xl mx-auto">
         <Card className="shadow-md bg-white dark:bg-gray-800">
           <CardHeader>
             <CardTitle className="text-xl sm:text-2xl font-semibold">
@@ -154,23 +154,24 @@ export function CreatePoll() {
           </CardHeader>
           <Form {...form}>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <CardContent className="space-y-4 sm:space-y-6">
+              <CardContent className="space-y-6">
                 <FormField
                   control={control}
                   name="pollName"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="text-sm sm:text-base">
-                        Poll Name
-                      </FormLabel>
+                      <FormLabel>Poll Name</FormLabel>
                       <FormControl>
                         <Input
-                          className="w-full text-sm sm:text-base"
-                          placeholder="Enter poll name"
                           {...field}
+                          placeholder="Enter poll name"
+                          className={cn(
+                            "w-full text-sm sm:text-base ",
+                            fieldState.error && "border-red-500"
+                          )}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-600  font-normal" />
                     </FormItem>
                   )}
                 />
@@ -178,46 +179,65 @@ export function CreatePoll() {
                 <FormField
                   control={control}
                   name="duration"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="text-sm sm:text-base">
-                        Duration (in hours)
-                      </FormLabel>
+                      <FormLabel>Duration (in hours)</FormLabel>
                       <FormControl>
                         <Input
-                          type="number"
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
                           min={1}
-                          className="w-full text-sm sm:text-base"
-                          placeholder="e.g. 1"
                           {...field}
-                          onChange={(e) =>
-                            field.onChange(Number(e.target.value))
-                          }
+                          placeholder="e.g. 1"
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (/^\d*$/.test(value)) {
+                              field.onChange(value === "" ? "" : Number(value));
+                            } else {
+                              form.setError("duration", {
+                                type: "manual",
+                                message: "Only numbers are allowed",
+                              });
+                            }
+                          }}
+                          onBlur={(e) => {
+                            // Clear error on blur if value is valid
+                            if (/^\d+$/.test(e.target.value)) {
+                              form.clearErrors("duration");
+                            }
+                            field.onBlur();
+                          }}
+                          className={cn(
+                            "w-full text-sm sm:text-base  ",
+                            fieldState.error && "border-red-500 "
+                          )}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-600  font-normal" />
                     </FormItem>
                   )}
                 />
 
                 <div>
-                  <FormLabel className="text-sm sm:text-base">
-                    Poll Options
-                  </FormLabel>
-                  <div className="space-y-3 mt-2 max-h-[300px] sm:max-h-[400px] overflow-y-auto">
+                  <FormLabel>Poll Options</FormLabel>
+                  <div className="space-y-3 mt-2 max-h-[300px] overflow-y-auto">
                     {fields.map((field, index) => (
                       <FormField
                         key={field.id}
                         control={control}
                         name={`options.${index}.text`}
-                        render={({ field }) => (
+                        render={({ field, fieldState }) => (
                           <FormItem>
                             <div className="flex gap-2 items-center">
                               <FormControl>
                                 <Input
-                                  className="w-full text-sm sm:text-base"
-                                  placeholder={`Option ${index + 1}`}
                                   {...field}
+                                  placeholder={`Option ${index + 1}`}
+                                  className={cn(
+                                    "w-full text-sm sm:text-base  ",
+                                    fieldState.error && "border-red-500"
+                                  )}
                                 />
                               </FormControl>
                               <Button
@@ -226,12 +246,11 @@ export function CreatePoll() {
                                 size="icon"
                                 onClick={() => remove(index)}
                                 disabled={fields.length <= 2}
-                                className="flex-shrink-0"
                               >
-                                <TrashIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
+                                <TrashIcon className="h-5 w-5 text-gray-500" />
                               </Button>
                             </div>
-                            <FormMessage />
+                            <FormMessage className="text-red-600  font-normal" />
                           </FormItem>
                         )}
                       />
@@ -239,32 +258,33 @@ export function CreatePoll() {
                     <Button
                       type="button"
                       variant="outline"
-                      className="mt-2 w-full sm:w-auto text-sm sm:text-base"
                       onClick={() => append({ text: "" })}
+                      className="w-full sm:w-auto text-sm mt-2"
                     >
-                      <PlusIcon className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                      <PlusIcon className="mr-2 h-4 w-4" />
                       Add Option
                     </Button>
                   </div>
                 </div>
               </CardContent>
+
               <CardFooter className="flex flex-col sm:flex-row justify-end gap-3">
                 <Button
                   variant="outline"
                   type="button"
-                  className="w-full sm:w-auto text-sm sm:text-base"
                   onClick={() => {
-                    form.reset();
+                    reset();
                     router.push("/");
                   }}
+                  className="w-full sm:w-auto"
                 >
                   Cancel
                 </Button>
                 <Button
                   variant="customBlue"
                   type="submit"
-                  className="w-full sm:w-auto text-sm sm:text-base"
                   disabled={loading || isConfirming}
+                  className="w-full sm:w-auto"
                 >
                   {loading || isConfirming ? "Creating..." : "Create Poll"}
                 </Button>
