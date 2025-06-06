@@ -21,7 +21,7 @@ const CustomConnectButton: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center w-full">
       {isConnected ? (
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-gray-700">
@@ -32,7 +32,12 @@ const CustomConnectButton: React.FC = () => {
           </Button>
         </div>
       ) : (
-        <Button onClick={handleConnect} variant="customBlue" size="default">
+        <Button
+          onClick={handleConnect}
+          variant="customBlue"
+          size="sm"
+          className="w-full sm:w-auto text-sm sm:text-base"
+        >
           Connect Wallet
         </Button>
       )}
